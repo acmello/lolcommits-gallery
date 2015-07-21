@@ -12,8 +12,6 @@ var DEFAULT_DIR = "test";
 var CURRENT_DIR = program.directory ? process.argv[3] : DEFAULT_DIR;
 var DEFAULT_URL = "http://localhost:8000/save";
 
-//console.log(fs.createReadStream(DEFAULT_DIR + '/teste3.html'));
-
 exists(CURRENT_DIR, function(exists) {
   watch(CURRENT_DIR);
 });
@@ -35,9 +33,14 @@ function watch(directory) {
   });
 }
 
-function exists(directory, fn) {
-  var directory = directory || DEFAULT_DIR;
-  fs.exists(directory, function(exists) {
-    fn(exists);
+function exists(path, fn){
+  fs.stat(path, function(err, stats) {
+    if(err) {
+      throw error
+    } else if (!stats.isDirectory()) {
+      throw new Error(path + ' is not a directory.');
+    }
+
+    fn.call(this, path);
   });
 }
